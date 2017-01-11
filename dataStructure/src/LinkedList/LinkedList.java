@@ -11,62 +11,72 @@ package LinkedList;
 public class LinkedList<E> {
 	private Node<E> headNode;
 	private int listSize;
-	
+
 	public LinkedList() {
 		super();
 		headNode = new Node<E>(null, null);
 	}
 
-	public boolean add(E element){
+	public int size() {
+		return listSize;
+	}
+
+	public boolean add(E element) {
 		boolean retVal = false;
-		Node<E> currentNode = new Node<E>();
-		currentNode = headNode;
-		while(currentNode != null){
+		Node<E> currentNode = headNode;
+		// 꼬리 노드에 접근
+		while (currentNode.getNextNode() != null) {
 			currentNode = currentNode.getNextNode();
 		}
-		//currentNode
-		/*currentNode.setElement(element);
-		currentNode.setNextNode(null);*/
+		// 꼬리 노드는 element, null 형태임
+		Node<E> rearNode = new Node<E>(element, null);
+		// 꼬리 노드에 node링크 넣어줌
+		currentNode.setNextNode(rearNode);
 		retVal = true;
 		listSize++;
 		return retVal;
 	}
-	
-	public E remove(int index){
-		E retElement = null;
-		 if(index<0 || index >= listSize){
-			 throw new IndexOutOfBoundsException("유효하지 않은 index입니다.");
-	     }else if(index == 0){
-	         Node<E> firstNode = headNode.getNextNode().getNextNode();
-	         headNode.setNextNode(firstNode);
-	         listSize--;
-	         retElement = firstNode.getElement();
-	     }else{
-	    	 Node<E> node = headNode.getNextNode();
-	         for(int i =0; i < index-1 ; i++){
-	        	 node = node.getNextNode();
-	         }
-	         Node<E> previousNode = node.getNextNode();
-	         Node<E> removeNode = previousNode.getNextNode();
-	         Node<E> nextNode = removeNode.getNextNode();
-	         previousNode = nextNode;
-	         listSize--;
-	         retElement = removeNode.getElement();
-	     }
-		return retElement;
-	}
-	
-	public E get(int index){
-		Node<E> currentNode = headNode;
-		//index가 list사이즈보다 크거나 0보다 작을 경우 exception?
-		if(index<0 || index >= listSize	){
+
+	public E remove(int index) {
+		if (index < 0 || index >= listSize) {
 			throw new IndexOutOfBoundsException("유효하지 않은 index입니다.");
 		}
-		//currentNode 구하기 위해서 index 크기만큼 반복
-		 for(int i =0; i < index; i++){
-			 currentNode = currentNode.getNextNode();
-	        }
-	     return currentNode.getElement();
+		Node<E> node = headNode;
+		// 삭제될 '전' Node까지 접근
+		for (int i = 0; i <= index - 1; i++) {
+			if (node.getNextNode() != null) {
+				node = node.getNextNode();
+			}
+		}
+		// 현재 node는 removeNode의 이전 노드.
+		// removeNode는 return될 Node
+		Node<E> removeNode = node.getNextNode();
+
+		// 삭제될 다음 노드의 링크로 연결
+		node.setNextNode(removeNode.getNextNode());
+
+		// 삭제될 노드는 링크가 없어져야한다.
+		removeNode.setNextNode(null);
+		listSize--;
+		return removeNode.getElement();
 	}
-	
+
+	public E get(int index) {
+		Node<E> currentNode = headNode;
+		// index가 list사이즈보다 크거나 0보다 작을 경우
+		if (index < 0 || index >= listSize) {
+			throw new IndexOutOfBoundsException("유효하지 않은 index입니다.");
+		}
+		// currentNode 구하기 위해서 index 크기만큼 반복
+		for (int i = 0; i < index; i++) {
+			currentNode = currentNode.getNextNode();
+		}
+		return currentNode.getElement();
+	}
+
+	@Override
+	public String toString() {
+		return "LinkedList [headNode=" + headNode + ", listSize=" + listSize + "]";
+	}
+
 }
